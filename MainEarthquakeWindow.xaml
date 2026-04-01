@@ -8,6 +8,15 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:Background="White">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ItemsControl Name="EarthquakeListStack" Grid.ColumnSpan="100" Grid.RowSpan="100" HorizontalAlignment="Stretch">
             
+        </ItemsControl>
     </Grid>
 </UserControl>

@@ -96,5 +96,8 @@
   <ItemGroup>
     <None Include="G:\User_Files\Dev\mochineko\WPF_Project\YMM4_Earthquake_Plugin\.editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
 
 </Project>
