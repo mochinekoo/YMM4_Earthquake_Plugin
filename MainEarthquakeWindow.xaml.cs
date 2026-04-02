@@ -37,16 +37,31 @@ namespace YMM4_Earthquake_Plugin {
             grid.RowDefinitions.Add(new RowDefinition());
 
             grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.Background = convertColor(maxScale);
 
             TextBlock textBox = new TextBlock();
+            textBox.Margin = new Thickness(10, 0, 0, 0);
             textBox.Text = time + "　" + name;
+            Grid.SetColumn(textBox, 0);
             Grid.SetRow(textBox, 0);
             grid.Children.Add(textBox);
+
             TextBlock magnitudeText = new TextBlock();
             magnitudeText.Text = magnitude.ToString();
+            magnitudeText.Margin = new Thickness(10, 0, 0, 0);
+            Grid.SetColumn(magnitudeText, 0);
             Grid.SetRow(magnitudeText, 1);
             grid.Children.Add(magnitudeText);
+
+            TextBlock maxScaleText = new TextBlock();
+            maxScaleText.Margin = new Thickness(0, 0, 10, 0);
+            maxScaleText.Text = convertScale(maxScale);
+            maxScaleText.VerticalAlignment = VerticalAlignment.Center;
+            maxScaleText.HorizontalAlignment = HorizontalAlignment.Right;
+            Grid.SetColumn(maxScaleText, 1);
+            Grid.SetRowSpan(maxScaleText, 10);
+            grid.Children.Add(maxScaleText);
 
             return grid;
         }
