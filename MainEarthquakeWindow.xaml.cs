@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using YukkuriMovieMaker;
 using Timer = System.Timers.Timer;
 
+#pragma warning disable WPF0001
 namespace YMM4_Earthquake_Plugin {
     /// <summary>
     /// MainEarthquakeWindow.xaml の相互作用ロジック
@@ -56,9 +57,12 @@ namespace YMM4_Earthquake_Plugin {
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.Background = convertColor(maxScale);
 
+            ThemeMode theme = Application.Current.ThemeMode;
+
             TextBlock upText = new TextBlock();
             upText.Margin = new Thickness(10, 0, 0, 0);
             upText.Text = time;
+            upText.Foreground = new SolidColorBrush(Colors.Black);
             Grid.SetColumn(upText, 0);
             Grid.SetRow(upText, 0);
             grid.Children.Add(upText);
@@ -66,6 +70,7 @@ namespace YMM4_Earthquake_Plugin {
             TextBlock downText = new TextBlock();
             downText.Text = name + " " + magnitude.ToString();
             downText.Margin = new Thickness(10, 0, 0, 0);
+            downText.Foreground = new SolidColorBrush(Colors.Black);
             Grid.SetColumn(downText, 0);
             Grid.SetRow(downText, 1);
             grid.Children.Add(downText);
@@ -73,6 +78,7 @@ namespace YMM4_Earthquake_Plugin {
             TextBlock maxScaleText = new TextBlock();
             maxScaleText.Margin = new Thickness(0, 0, 10, 0);
             maxScaleText.Text = convertScale(maxScale);
+            maxScaleText.Foreground = new SolidColorBrush(Colors.Black);
             maxScaleText.VerticalAlignment = VerticalAlignment.Center;
             maxScaleText.HorizontalAlignment = HorizontalAlignment.Right;
             Grid.SetColumn(maxScaleText, 1);
