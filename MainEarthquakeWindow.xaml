@@ -13,9 +13,16 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <ItemsControl Name="EarthquakeListStack" Grid.ColumnSpan="100" Grid.RowSpan="100" HorizontalAlignment="Stretch">
+        <Menu Grid.Row="0" Grid.ColumnSpan="100">
+            <MenuItem Header="デバック">
+                <MenuItem Header="テストデータを流す" Click="OnClick"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <ItemsControl Name="EarthquakeListStack" Grid.ColumnSpan="100" Grid.Row="1" Grid.RowSpan="100" HorizontalAlignment="Stretch">
             
         </ItemsControl>
     </Grid>

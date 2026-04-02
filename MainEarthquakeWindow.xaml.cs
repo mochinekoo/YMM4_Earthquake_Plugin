@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,24 +11,39 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using YukkuriMovieMaker;
+using Timer = System.Timers.Timer;
 
 namespace YMM4_Earthquake_Plugin {
     /// <summary>
     /// MainEarthquakeWindow.xaml の相互作用ロジック
     /// </summary>
     public partial class MainEarthquakeWindow : UserControl {
+
+        public static int TASK_DURATION = 3;
+        private Timer earthquakeTask_;
+        private DateTime latestDate_;
+
         public MainEarthquakeWindow() {
             InitializeComponent();
             InitWindow();
         }
 
         public void InitWindow() {
-            foreach (var api in P2PEarthquakeAPI.GetInstance()) {
+            var apiList = P2PEarthquakeAPI.GetInstance();
+            for (int i = 0; i < apiList.Count(); i++) {
+                var api = apiList[i];
                 var earthquake = api.earthquake;
                 var hypocenter = earthquake.hypocenter;
-                var stackPanel = CreateEarthquakeGrid(earthquake.time, hypocenter.name, hypocenter.magnitude, earthquake.maxScale);
-                EarthquakeListStack.Items.Add(stackPanel);
+                if (i == 0) {
+                    latestDate_ = DateTime.Parse(earthquake.time);
+                }
+
+                var grid = CreateEarthquakeGrid(earthquake.time, hypocenter.name, hypocenter.magnitude, earthquake.maxScale);
+                EarthquakeListStack.Items.Add(grid);
             }
+            startEarthquakeTask();
         }
 
         private Grid CreateEarthquakeGrid(string time, string name, float magnitude, int maxScale) {
@@ -40,19 +56,19 @@ namespace YMM4_Earthquake_Plugin {
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.Background = convertColor(maxScale);
 
-            TextBlock textBox = new TextBlock();
-            textBox.Margin = new Thickness(10, 0, 0, 0);
-            textBox.Text = time + "　" + name;
-            Grid.SetColumn(textBox, 0);
-            Grid.SetRow(textBox, 0);
-            grid.Children.Add(textBox);
+            TextBlock upText = new TextBlock();
+            upText.Margin = new Thickness(10, 0, 0, 0);
+            upText.Text = time;
+            Grid.SetColumn(upText, 0);
+            Grid.SetRow(upText, 0);
+            grid.Children.Add(upText);
 
-            TextBlock magnitudeText = new TextBlock();
-            magnitudeText.Text = magnitude.ToString();
-            magnitudeText.Margin = new Thickness(10, 0, 0, 0);
-            Grid.SetColumn(magnitudeText, 0);
-            Grid.SetRow(magnitudeText, 1);
-            grid.Children.Add(magnitudeText);
+            TextBlock downText = new TextBlock();
+            downText.Text = name + " " + magnitude.ToString();
+            downText.Margin = new Thickness(10, 0, 0, 0);
+            Grid.SetColumn(downText, 0);
+            Grid.SetRow(downText, 1);
+            grid.Children.Add(downText);
 
             TextBlock maxScaleText = new TextBlock();
             maxScaleText.Margin = new Thickness(0, 0, 10, 0);
@@ -65,6 +81,40 @@ namespace YMM4_Earthquake_Plugin {
 
             return grid;
         }
+
+        public void startEarthquakeTask() {
+            if (earthquakeTask_ == null) {
+                Timer timer = new Timer(1000 * TASK_DURATION);
+                timer.Elapsed += (sender, e) => {
+                    Application.Current.Dispatcher.Invoke(() => {
+                        P2PEarthquakeAPI firstAPI = P2PEarthquakeAPI.GetInstance()[0];
+                        var earthquake = firstAPI.earthquake;
+                        var hypocenter = earthquake.hypocenter;
+                        DateTime apiGetTime = DateTime.Parse(earthquake.time);
+                        if (apiGetTime.ToBinary() > latestDate_.ToBinary()) {
+                            var latestGrid = CreateEarthquakeGrid(earthquake.time, hypocenter.name, hypocenter.magnitude, earthquake.maxScale);
+                            EarthquakeListStack.Items.Insert(0, latestGrid);
+                            latestDate_ = apiGetTime;
+                        }
+                        System.Diagnostics.Debug.WriteLine((apiGetTime.ToBinary() > latestDate_.ToBinary()) + ":" + apiGetTime.ToBinary() + ":" + latestDate_.ToBinary());
+                    });
+                };
+                earthquakeTask_ = timer;
+                earthquakeTask_.Start();
+            }
+        }
+
+        private void OnClick(object sender, RoutedEventArgs e) {
+            //デバック用
+            latestDate_ = DateTime.MinValue;
+        }
+
+        public void stopEarthquakeTask() {
+            if (earthquakeTask_ != null) {
+                earthquakeTask_.Stop();
+            }
+        }
+
 
         public string convertScale(int maxScale) {
             if (maxScale == 10) return "震度1";
