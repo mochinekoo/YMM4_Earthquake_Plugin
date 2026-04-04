@@ -33,6 +33,7 @@
     <Message Text="RemovePublishDirBeforeBuild" Importance="high" />
   </Target>
   <Target Name="CopyDebugDlls" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <RemoveDir Directories="$(YMM4_PATH)\user\plugin\$(AssemblyName)\" />
     <MakeDir Directories="$(YMM4_PATH)\user\plugin\$(AssemblyName)\" />
 
     <ItemGroup>
