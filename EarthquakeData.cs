@@ -6,7 +6,8 @@ using System.Windows.Media;
 namespace YMM4_Earthquake_Plugin {
     internal class EarthquakeData {
 
-        public EarthquakeInfo? earthquake { get; set; }
+        public Issue issue { get; set; }
+        public EarthquakeInfo earthquake { get; set; }
         public EarthquakePoint[]? points { get; set; }
 
         public class EarthquakeInfo {
@@ -30,6 +31,18 @@ namespace YMM4_Earthquake_Plugin {
             public int scale;
         }
 
+        public class Issue {
+            public string time { get; set; }
+            public string type { get; set; }
+        }
+
+        public static IssueType? convertIssueType(string type) {
+            if (Enum.TryParse<IssueType>(type, out var issue)) {
+                return issue;
+            }
+            return null;
+        }
+
         public static SolidColorBrush convertColor(EarthquakeType type) {
             if (type == EarthquakeType.ONE) return new SolidColorBrush(Colors.White);
             else if (type == EarthquakeType.TWO) return new SolidColorBrush(Colors.AliceBlue);
@@ -45,16 +58,25 @@ namespace YMM4_Earthquake_Plugin {
     }
 
     public enum EarthquakeType {
-        ZERO,
-        ONE,
-        TWO,
-        THREE,
-        FOUR,
-        FIVE_LOW,
-        FIVE_HIGH,
-        SIX_LOW,
-        SIX_HIGH,
-        SEVEN,
-        UNKNOWN
+        ZERO, //震度0
+        ONE, //震度1
+        TWO, //震度2
+        THREE, //震度3
+        FOUR, //震度4
+        FIVE_LOW, //震度5弱
+        FIVE_HIGH, //震度5強
+        SIX_LOW, //震度6弱
+        SIX_HIGH, //震度6強
+        SEVEN, //震度7
+        UNKNOWN //不明
+    }
+
+    public enum IssueType {
+        ScalePrompt, //震度速報（※3以上）
+        Destination, //震源に関する情報（※3以上）
+        ScaleAndDestination, //震度・震源に関する情報
+        DetailScale, //各地の震度に関する情報
+        Foreign, //遠地地震
+        Other //その他
     }
 }

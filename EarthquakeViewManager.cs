@@ -33,13 +33,21 @@ namespace YMM4_Earthquake_Plugin {
             return window.EarthquakeListStack;
         }
 
-        public void AddEarthquakeView(EarthquakeData earthquakeData) {
-            var earthquake = earthquakeData.earthquake;
-            var hypocenter = earthquake.hypocenter;
-            var apiGetTime = DateTime.Parse(earthquake.time);
-            var latestGrid = CreateEarthquakeGrid(earthquake.time, hypocenter.name, hypocenter.magnitude, earthquake.maxScale);
-            GetEarthquakeView().Items.Insert(0, latestGrid); //一番最初に挿入する
-            latestDate_ = apiGetTime;
+        public bool AddEarthquakeView(EarthquakeData earthquakeData) {
+            var issue = earthquakeData.issue;
+            var issueType = EarthquakeData.convertIssueType(issue.type);
+            if (issueType == IssueType.Destination || issueType == IssueType.ScalePrompt) {
+                return false;
+            }
+            else {
+                var earthquake = earthquakeData.earthquake;
+                var hypocenter = earthquake.hypocenter;
+                var apiGetTime = DateTime.Parse(earthquake.time);
+                var latestGrid = CreateEarthquakeGrid(earthquake.time, hypocenter.name, hypocenter.magnitude, earthquake.maxScale);
+                GetEarthquakeView().Items.Insert(0, latestGrid); //一番最初に挿入する
+                latestDate_ = apiGetTime;
+                return true;
+            }
         }
 
         public void resetEarthquakeView() {
@@ -47,6 +55,11 @@ namespace YMM4_Earthquake_Plugin {
             var apiList = P2PEarthquakeAPI.GetInstance();
             for (int i = 0; i < apiList.Count(); i++) {
                 var api = apiList[i];
+                var issue = api.issue;
+                var issueType = EarthquakeData.convertIssueType(issue.type);
+                if (issueType == IssueType.Destination || issueType == IssueType.ScalePrompt) {
+                    continue;
+                }
                 var earthquake = api.earthquake;
                 var hypocenter = earthquake.hypocenter;
                 if (i == 0) {
